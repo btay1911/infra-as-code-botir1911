@@ -5,36 +5,27 @@ resource "aws_instance" "instance" {
   vpc_security_group_ids       = [aws_security_group.sg.id]
   key_name                     = "crixsalis-key"
   associate_public_ip_address  = true
-  iam_instance_profile         = aws_iam_instance_profile.investment_app.name
-  user_data                    = file("${path.module}/investment-app.sh")
-  user_data_replace_on_change  = true
 
   tags = {
-    Name = "HelloWorld"
+    Name = "botir-assignment-01"
   }
 }
 
 resource "aws_security_group" "sg" {
-  name        = "allow_tls"
-  description = "Allow TLS inbound traffic and all outbound traffic"
+  name        = "allow_ssh"
+  description = "Allow SSH inbound traffic and all outbound traffic"
   vpc_id      = aws_vpc.scratch.id
 
   tags = {
-    Name = "allow_tls"
+    Name = "allow_ssh"
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "allow_tls_ipv4" {
-  security_group_id = aws_security_group.sg.id
-  cidr_ipv4          = "0.0.0.0/0"
-  from_port          = 80
-  ip_protocol        = "tcp"
-  to_port            = 80
-}
-
 resource "aws_vpc_security_group_ingress_rule" "allow_ssh" {
+  for_each = toset(var.allowed_ssh_ips)
+
   security_group_id = aws_security_group.sg.id
-  cidr_ipv4          = "24.74.200.150/32"
+  cidr_ipv4          = each.value
   from_port          = 22
   ip_protocol        = "tcp"
   to_port            = 22

@@ -15,3 +15,10 @@ variable "subnets" {
     "us-east-1c" = "10.0.3.0/24"
   }
 }
+
+variable "allowed_ssh_ips" {
+  type = list(string)
+  default = [
+    "24.74.200.150/32",
+  ]
+}

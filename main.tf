@@ -35,8 +35,7 @@ resource "aws_route_table" "main" {
 }
 
 resource "aws_route_table_association" "main" {
-  for_each = var.subnets
-  
+  for_each       = { for k, v in var.subnets : k => v if k != "us-east-1b" }
   subnet_id      = aws_subnet.main[each.key].id
   route_table_id = aws_route_table.main.id
 }
